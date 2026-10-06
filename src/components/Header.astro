@@ -1,0 +1,118 @@
+---
+import { Download, Mail, MapPin } from '@lucide/astro';
+import ThemeToggle from './ThemeToggle.astro';
+import Github from './icons/Github.astro';
+import Linkedin from './icons/Linkedin.astro';
+import type { PortfolioData } from '../data/portfolio';
+
+interface Props {
+  personal: PortfolioData['personal'];
+}
+
+const { personal } = Astro.props;
+const profiles = personal.socials.filter(social => social.icon === 'linkedin' || social.icon === 'github');
+// Set to true to show the opportunities status beside the location.
+const showOpportunitiesStatus = false;
+---
+
+<header class="w-full xl:pb-8 xl:border-b border-zinc-200 dark:border-zinc-800">
+  <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+    <!-- Left: Avatar + Title & Meta -->
+    <div class="flex items-start sm:items-center gap-3 sm:gap-5">
+      <!-- Avatar / Initials container -->
+      <div class="relative shrink-0 no-print">
+        <div class="w-17 h-17 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-tr from-sky-500 via-blue-600 to-indigo-600 p-0.5 shadow-lg shadow-sky-500/10">
+          <div class="w-full h-full rounded-[14px] bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center overflow-hidden">
+            {personal.avatarUrl ? (
+              <img
+                src={personal.avatarUrl}
+                alt={`Portrait of ${personal.name}`}
+                width="112"
+                height="140"
+                loading="eager"
+                decoding="async"
+                class="w-full h-full object-cover object-top"
+              />
+            ) : (
+              <span class="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-zinc-800 dark:text-white">
+                OG
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <!-- Names & Headline -->
+      <div class="space-y-1.5">
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+          {personal.name}
+        </h1>
+        <h2 class="text-base sm:text-lg font-medium text-zinc-600 dark:text-zinc-300">
+          {personal.headline}
+        </h2>
+        <div class="flex items-center gap-2 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+          <MapPin class="w-4 h-4 text-sky-500 shrink-0" />
+          <span>{personal.location}</span>
+          {showOpportunitiesStatus && (
+            <span class="text-zinc-300 dark:text-zinc-700">•</span>
+          )}
+          {showOpportunitiesStatus && (
+            <span class="text-emerald-600 dark:text-emerald-400 font-medium">
+              Open to select opportunities
+            </span>
+          )}
+        </div>
+        <ul aria-label="Contact and profiles" class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
+          <li>
+            <a href={`mailto:${personal.email}`} class="inline-flex min-h-11 items-center gap-1.5 text-zinc-600 dark:text-zinc-300 hover:text-sky-600 dark:hover:text-sky-400 underline underline-offset-4">
+              <Mail class="w-3.5 h-3.5" />
+              <span class="no-print">Email</span><span class="hidden print-only break-all">{personal.email}</span>
+            </a>
+          </li>
+          {profiles.map(social => <li>
+            <a href={social.href} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center gap-1.5 text-zinc-600 dark:text-zinc-300 hover:text-sky-600 dark:hover:text-sky-400 underline underline-offset-4">
+              {social.icon === 'github' ? <Github class="w-3.5 h-3.5" /> : <Linkedin class="w-3.5 h-3.5" />}
+              <span>{social.label}</span>
+            </a>
+          </li>)}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Theme and PDF actions -->
+    <div class="flex flex-wrap items-center gap-3 self-start lg:self-center no-print">
+      <ThemeToggle />
+
+      <a
+        href={`mailto:${personal.email}`}
+        class="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium rounded-xl text-zinc-700 dark:text-zinc-200 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800/90 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-700/80 transition-colors"
+      >
+        <Mail class="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+        <span>Contact</span>
+      </a>
+
+      <a
+        href={`${import.meta.env.BASE_URL}omar-garrios-cv.pdf`}
+        download="omar-garrios-cv.pdf"
+        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl text-white bg-zinc-900 hover:bg-zinc-800 dark:bg-sky-600 dark:hover:bg-sky-500 shadow-sm transition-all hover:shadow"
+        title="Download resume as PDF"
+      >
+        <Download class="w-4 h-4" />
+        <span>Download CV</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  let closedBeforePrint: HTMLDetailsElement[] = [];
+  window.addEventListener('beforeprint', () => {
+    closedBeforePrint = Array.from(document.querySelectorAll<HTMLDetailsElement>('.project-details:not([open])'));
+    closedBeforePrint.forEach(detail => { detail.open = true; });
+  });
+  window.addEventListener('afterprint', () => {
+    closedBeforePrint.forEach(detail => { detail.open = false; });
+    closedBeforePrint = [];
+  });
+
+</script>

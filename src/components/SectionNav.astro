@@ -1,0 +1,81 @@
+---
+const sections = [
+  { id: 'profile', label: 'About' },
+  { id: 'skills', label: 'Expertise' },
+  { id: 'experience', label: 'Work' },
+];
+---
+
+<nav aria-label="Page sections" class="section-nav self-start xl:sticky xl:top-8 xl:col-start-1 xl:row-start-2 no-print">
+  <ul class="flex xl:flex-col border-b xl:border-b-0 xl:border-l border-zinc-200 dark:border-zinc-800">
+    {sections.map(section => <li>
+      <a href={`#${section.id}`} data-section-link class="section-link relative flex min-h-11 items-center px-3 text-sm text-zinc-600 dark:text-zinc-400 hover:text-sky-700 dark:hover:text-sky-300">
+        {section.label}
+      </a>
+    </li>)}
+  </ul>
+</nav>
+
+<style>
+  .section-link[aria-current='location'] {
+    color: #0369a1;
+    font-weight: 600;
+  }
+  :global(.dark) .section-link[aria-current='location'] { color: #7dd3fc; }
+  .section-link[aria-current='location']::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: currentColor;
+  }
+  @media (min-width: 80rem) {
+    .section-link[aria-current='location']::after {
+      top: 0;
+      bottom: 0;
+      left: -1px;
+      right: auto;
+      width: 1px;
+      height: auto;
+    }
+  }
+</style>
+
+<script>
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-section-link]'));
+  const sections = links.map(link => document.getElementById(link.hash.slice(1)));
+  let scheduled = false;
+
+  function updateCurrentSection() {
+    // Mark the last section that has reached the upper reading area.
+    const threshold = Math.min(160, window.innerHeight * 0.25);
+    let current = 0;
+    sections.forEach((section, index) => {
+      if (section && section.getBoundingClientRect().top <= threshold) current = index;
+    });
+    if (window.scrollY > 0 && Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight - 2) {
+      current = links.length - 1;
+    }
+    links.forEach((link, index) => {
+      if (index === current) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+    scheduled = false;
+  }
+
+  function scheduleUpdate() {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(updateCurrentSection);
+  }
+
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', scheduleUpdate);
+  window.addEventListener('hashchange', scheduleUpdate);
+  window.addEventListener('pageshow', scheduleUpdate);
+  const observer = new ResizeObserver(scheduleUpdate);
+  sections.forEach(section => { if (section) observer.observe(section); });
+  updateCurrentSection();
+</script>

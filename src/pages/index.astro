@@ -1,0 +1,43 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import SectionNav from '../components/SectionNav.astro';
+import Profile from '../components/Profile.astro';
+import Languages from '../components/Languages.astro';
+import TechStack from '../components/TechStack.astro';
+import Experience from '../components/Experience.astro';
+import Education from '../components/Education.astro';
+import Footer from '../components/Footer.astro';
+import ImageLightbox from '../components/ImageLightbox.astro';
+import { portfolioData } from '../data/portfolio';
+---
+
+<Layout
+  title={`${portfolioData.personal.name} — ${portfolioData.personal.headline}`}
+  description={portfolioData.personal.subheadline}
+>
+  <main class="portfolio-layout max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 grid grid-cols-1 gap-y-6 sm:gap-y-8 xl:gap-y-10 xl:grid-cols-[7rem_minmax(0,1fr)] xl:gap-x-8 print-page">
+    <div class="min-w-0 xl:col-span-2"><Header personal={portfolioData.personal} /></div>
+    <SectionNav />
+    <div class="portfolio-content min-w-0 space-y-12 sm:space-y-14 xl:col-start-2 xl:row-start-2">
+    <Profile about={portfolioData.personal.about} />
+
+    <div class="portfolio-background grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+      <div class="lg:col-span-7"><Education education={portfolioData.education} /></div>
+      <div class="lg:col-span-5"><Languages languages={portfolioData.personal.languages} /></div>
+    </div>
+
+    <TechStack skills={portfolioData.skills} />
+
+    <!-- Experience & Featured Client / Production Systems -->
+    <Experience
+      experiences={portfolioData.experiences}
+      independentProjects={portfolioData.independentProjects}
+    />
+
+    <!-- Footer -->
+    <Footer personal={portfolioData.personal} />
+    </div>
+  </main>
+  <ImageLightbox />
+</Layout>
