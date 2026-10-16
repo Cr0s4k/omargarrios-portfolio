@@ -1,0 +1,13 @@
+---
+import { ArrowUp } from '@lucide/astro';
+import type { PortfolioData } from '../data/portfolio';
+interface Props { personal: PortfolioData['personal']; }
+const { personal } = Astro.props;
+---
+<footer class="pt-6 pb-4 border-t border-zinc-200 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-400 no-print flex items-center justify-between gap-4">
+  <p>© {new Date().getFullYear()} {personal.name}.</p>
+  <a href="#top" class="inline-flex min-h-11 items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300 hover:text-sky-600 dark:hover:text-sky-400 underline underline-offset-4">
+    <ArrowUp class="w-3.5 h-3.5" />
+    <span>Back to top</span>
+  </a>
+</footer>

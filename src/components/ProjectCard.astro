@@ -1,0 +1,52 @@
+---
+import { Image } from 'astro:assets';
+import { ExternalLink } from '@lucide/astro';
+import Github from './icons/Github.astro';
+import type { Project } from '../data/portfolio';
+interface Props { project: Project; compact?: boolean; }
+const { project, compact = false } = Astro.props;
+const client = project.client;
+const details = compact ? project.highlights : project.highlights.slice(1);
+const landscape = project.screenshots?.every(shot => shot.src.width > shot.src.height);
+const singlePortrait = project.screenshots?.length === 1 && !landscape;
+const shotWidths = landscape ? [400, 800, 1200] : [200, 400];
+const shotSizes = singlePortrait ? '160px' : landscape ? '(min-width: 640px) 250px, 100vw' : '(min-width: 640px) 140px, 30vw';
+---
+<article class:list={[
+  'min-w-0 break-inside-avoid print-clean-container',
+  project.hideInPrint && 'no-print',
+  compact ? 'py-5 border-b last:border-b-0 border-zinc-200 dark:border-zinc-800' : 'p-5 sm:p-6 rounded-xl bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800'
+]}>
+  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+    <h3 class="text-lg font-bold tracking-tight text-zinc-900 dark:text-white">
+      {client ? <>{client}<span class="font-normal text-zinc-500 dark:text-zinc-400"> — {project.title}</span></> : project.title}
+    </h3>
+    {(project.link || project.repo) && <div class="flex items-center gap-4 no-print">
+      {project.repo && <a href={project.repo} target="_blank" rel="noopener noreferrer" aria-label={`Source code for ${client || project.title}`} class="inline-flex min-h-10 items-center gap-1.5 text-sm text-sky-700 dark:text-sky-300 underline underline-offset-4"><Github class="w-3.5 h-3.5" /> Source code</a>}
+      {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${client || project.title}`} class="inline-flex min-h-10 items-center gap-1.5 text-sm text-sky-700 dark:text-sky-300 underline underline-offset-4">Visit site <ExternalLink class="w-3.5 h-3.5" /></a>}
+    </div>}
+  </div>
+  <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{project.role}{project.period && <> · {project.period}</>}</p>
+  <p class="mt-3 max-w-3xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">{project.summary}</p>
+  {project.screenshots && <div class:list={['mt-4 grid gap-3 no-print', singlePortrait ? 'max-w-40 grid-cols-1' : landscape ? 'max-w-3xl grid-cols-1 sm:grid-cols-3' : 'max-w-md grid-cols-3']}>
+    {project.screenshots.map(shot => <div>
+      <a href={shot.src.src} target="_blank" rel="noopener" data-lightbox class:list={['block rounded-xl', shot.dark && 'dark:hidden']}>
+        <Image src={shot.src} alt={shot.alt} widths={shotWidths} sizes={shotSizes} class="w-full h-auto rounded-xl border border-zinc-200 dark:border-zinc-800" />
+      </a>
+      {shot.dark && <a href={shot.dark.src} target="_blank" rel="noopener" data-lightbox class="hidden dark:block rounded-xl">
+        <Image src={shot.dark} alt={shot.alt} widths={shotWidths} sizes={shotSizes} class="w-full h-auto rounded-xl border border-zinc-800" />
+      </a>}
+    </div>)}
+  </div>}
+  {!compact && project.highlights[0] && <p class="mt-3 max-w-3xl text-sm leading-relaxed font-medium text-zinc-800 dark:text-zinc-200">{project.highlights[0]}</p>}
+  {!compact && <p class="mt-3 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">{project.stack.slice(0, 4).join(' · ')}</p>}
+  <details class="project-details mt-3">
+    <summary class="w-fit cursor-pointer py-2 text-sm font-medium text-sky-700 dark:text-sky-300">
+      Technical details<span class="sr-only"> for {client || project.title}</span>
+    </summary>
+    <div class="pt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
+      {details.length > 0 && <ul class="list-disc pl-5 space-y-2 max-w-3xl">{details.map(item => <li>{item}</li>)}</ul>}
+      <p class="mt-3 text-xs leading-relaxed"><span class="font-semibold">Stack:</span> {project.stack.join(' · ')}</p>
+    </div>
+  </details>
+</article>

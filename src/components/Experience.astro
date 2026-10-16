@@ -1,0 +1,30 @@
+---
+import ProjectCard from './ProjectCard.astro';
+import type { Experience as ExperienceType, Project } from '../data/portfolio';
+interface Props { experiences: ExperienceType[]; independentProjects: Project[]; }
+const { experiences, independentProjects } = Astro.props;
+---
+<section id="experience" aria-labelledby="work-heading" class="space-y-6">
+  <h2 id="work-heading" class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">Experience & selected work</h2>
+  {experiences.map(exp => (
+    <div class="space-y-6">
+      <div class="border-l border-sky-500 pl-4 break-inside-avoid">
+        <div class="flex flex-wrap items-baseline justify-between gap-2">
+          <h3 class="font-semibold text-zinc-900 dark:text-white">{exp.role} · {exp.website ? <a href={exp.website} target="_blank" rel="noopener noreferrer" class="underline underline-offset-4 hover:text-sky-600 dark:hover:text-sky-400">{exp.company}</a> : exp.company}</h3>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400">{exp.period}</p>
+        </div>
+        <p class="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">{exp.description}</p>
+        <p class="mt-2 text-xs text-zinc-500 dark:text-zinc-400">Client projects delivered through {exp.company}.</p>
+      </div>
+      <div class="space-y-4">{exp.projects.filter(project => project.featured).map(project => <ProjectCard project={project} />)}</div>
+      {exp.projects.some(project => !project.featured) && <section aria-label="More client work" class="no-print">
+        <h3 class="text-base font-semibold text-zinc-900 dark:text-white">More client work</h3>
+        {exp.projects.filter(project => !project.featured).map(project => <ProjectCard project={project} compact />)}
+      </section>}
+    </div>
+  ))}
+  {independentProjects?.length > 0 && <section aria-labelledby="independent-heading" class="pt-2 no-print">
+    <h2 id="independent-heading" class="text-lg font-semibold text-zinc-900 dark:text-white">Independent projects</h2>
+    {independentProjects.map(project => <ProjectCard project={project} compact />)}
+  </section>}
+</section>

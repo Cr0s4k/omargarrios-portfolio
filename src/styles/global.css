@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased text-zinc-900 bg-zinc-50 transition-colors duration-200;
+  }
+
+  .dark body {
+    @apply text-zinc-100 bg-zinc-950;
+  }
+}
+
+/* Print-specific layout optimization for high-fidelity PDF resume generation */
+@media print {
+  @page {
+    margin: 14mm;
+    size: A4;
+  }
+
+  html { font-size: 14px; color-scheme: light; }
+
+  body {
+    background: #ffffff !important;
+    color: #09090b !important;
+    font-size: 9.5pt !important;
+    line-height: 1.4 !important;
+  }
+
+  /* The document uses a compact reading layout, independent of screen width. */
+  .portfolio-layout {
+    display: block;
+    max-width: none;
+    padding: 0;
+  }
+
+  .portfolio-content { margin-top: 18pt; }
+  .portfolio-content > * { margin-block: 0 18pt; }
+  .portfolio-background { grid-template-columns: 3fr 2fr; gap: 20pt; }
+  .portfolio-background > div { grid-column: auto; }
+  #skills dl { grid-template-columns: 1fr 1fr; gap: 12pt 20pt; }
+  #skills dl > div { break-inside: avoid; }
+  #profile { max-width: none; font-size: 10pt; }
+  h1 { font-size: 24pt !important; }
+  h2 { break-after: avoid; }
+  h3 { break-after: avoid; }
+  p, li { orphans: 3; widows: 3; }
+  header { break-inside: avoid; }
+  header a { min-height: 0 !important; }
+  #experience article { margin-block: 12pt !important; break-inside: auto !important; page-break-inside: auto !important; }
+  .project-details { margin-top: 6pt; }
+  .project-details > div { padding-top: 0; }
+
+  /* Native browser printing should remain legible with dark mode selected. */
+  .dark .portfolio-layout, .dark .portfolio-layout * {
+    color: #27272a !important;
+    background-color: transparent !important;
+    border-color: #d4d4d8 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-clean-container {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    background: transparent !important;
+  }
+
+  .break-inside-avoid {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  a {
+    text-decoration: none !important;
+    color: inherit !important;
+  }
+
+  .badge-print {
+    border: 1px solid #e4e4e7 !important;
+    color: #27272a !important;
+    background: #f4f4f5 !important;
+    font-size: 8pt !important;
+  }
+}
+@layer base {
+  :focus-visible { outline: 2px solid #0284c7; outline-offset: 4px; }
+  .dark :focus-visible { outline-color: #7dd3fc; }
+  section[id] { scroll-margin-top: 2rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+}
+@media print {
+  .project-details > summary { display: none; }
+}

@@ -1,0 +1,39 @@
+---
+import { X } from '@lucide/astro';
+---
+<dialog id="image-lightbox" aria-label="Image preview" class="image-lightbox no-print m-auto max-h-none max-w-none bg-transparent p-0 backdrop:bg-zinc-950/80 backdrop:backdrop-blur-sm">
+  <div class="flex h-dvh w-screen items-center justify-center p-4 sm:p-10">
+    <img alt="" class="max-h-full max-w-full rounded-xl object-contain shadow-2xl" />
+  </div>
+  <button type="button" data-close aria-label="Close preview" class="absolute top-3 right-3 inline-flex h-11 w-11 items-center justify-center rounded-full bg-zinc-900/70 text-white hover:bg-zinc-900">
+    <X class="w-5 h-5" />
+  </button>
+</dialog>
+
+<script>
+  const dialog = document.getElementById('image-lightbox') as HTMLDialogElement;
+  const image = dialog.querySelector('img')!;
+
+  document.addEventListener('click', event => {
+    const link = (event.target as Element).closest<HTMLAnchorElement>('a[data-lightbox]');
+    if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    image.src = link.href;
+    image.alt = link.querySelector('img')?.alt ?? '';
+    dialog.showModal();
+  });
+
+  dialog.addEventListener('click', event => {
+    if (event.target !== image) dialog.close();
+  });
+
+  dialog.addEventListener('close', () => image.removeAttribute('src'));
+</script>
+
+<style>
+  .image-lightbox[open] { animation: lightbox-in 150ms ease-out; }
+  @keyframes lightbox-in { from { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .image-lightbox[open] { animation: none; }
+  }
+</style>

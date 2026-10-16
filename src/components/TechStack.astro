@@ -1,0 +1,18 @@
+---
+import type { SkillGroup } from '../data/portfolio';
+interface Props { skills: SkillGroup[]; }
+const { skills } = Astro.props;
+---
+<section id="skills" aria-labelledby="skills-heading" class="space-y-5">
+  <h2 id="skills-heading" class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">Technical expertise</h2>
+  <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6">
+    {skills.map(group => <div>
+      <dt class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{group.category}</dt>
+      <dd class="mt-3">
+        <ul class="flex flex-wrap gap-2">
+          {group.skills.filter(skill => skill.highlight).map(skill => <li class="px-2.5 py-1 rounded-md border border-sky-200/70 dark:border-sky-900/60 bg-sky-50 dark:bg-sky-950/40 text-xs leading-relaxed font-medium text-sky-700 dark:text-sky-300 badge-print">{skill.name}</li>)}
+        </ul>
+      </dd>
+    </div>)}
+  </dl>
+</section>
